@@ -60,13 +60,19 @@ namespace TestEtoVeldrid
 
 			Surface = new VeldridSurface(backend, options);
 			Surface.Size = new Eto.Drawing.Size(200, 200);
-			Surface.VeldridInitialized += (sender, e) => VeldridReady = true;
 
 			Content = Surface;
 
 			Driver = new VeldridDriver
 			{
 				Surface = Surface
+			};
+
+			Surface.VeldridInitialized += (sender, e) =>
+			{
+				Driver.SetUpVeldrid();
+
+				VeldridReady = true;
 			};
 
 			// TODO: Make this binding actually work both ways.
@@ -80,8 +86,6 @@ namespace TestEtoVeldrid
 			{
 				return;
 			}
-
-			Driver.SetUpVeldrid();
 
 			Title = $"Veldrid backend: {Surface.Backend.ToString()}";
 
