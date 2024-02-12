@@ -34,6 +34,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEtoVeldrid.Wpf", "test\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestEtoVeldrid", "test\TestEtoVeldrid\TestEtoVeldrid.csproj", "{14AFF269-5C00-4E7A-8528-4DA704B7D2F4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.VeldridSurface", "src\Eto.VeldridSurface\Eto.VeldridSurface.csproj", "{AB712D06-69EA-4601-A9B3-774820B56633}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mac = Debug|Mac
@@ -114,6 +116,14 @@ Global
 		{14AFF269-5C00-4E7A-8528-4DA704B7D2F4}.Release|Mac.Build.0 = Release|Any CPU
 		{14AFF269-5C00-4E7A-8528-4DA704B7D2F4}.Release|Windows.ActiveCfg = Release|Any CPU
 		{14AFF269-5C00-4E7A-8528-4DA704B7D2F4}.Release|Windows.Build.0 = Release|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Debug|Mac.ActiveCfg = Debug|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Debug|Mac.Build.0 = Debug|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Debug|Windows.ActiveCfg = Debug|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Debug|Windows.Build.0 = Debug|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Release|Mac.ActiveCfg = Release|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Release|Mac.Build.0 = Release|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Release|Windows.ActiveCfg = Release|Any CPU
+		{AB712D06-69EA-4601-A9B3-774820B56633}.Release|Windows.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -129,6 +139,7 @@ Global
 		{3589BA37-A44E-49DB-A370-26D41EB3955F} = {48C6A621-D898-4932-A28F-DFC0C1B272B6}
 		{51F518B4-5A7F-438D-A164-145D527DB1FF} = {48C6A621-D898-4932-A28F-DFC0C1B272B6}
 		{14AFF269-5C00-4E7A-8528-4DA704B7D2F4} = {48C6A621-D898-4932-A28F-DFC0C1B272B6}
+		{AB712D06-69EA-4601-A9B3-774820B56633} = {6136B651-45C5-48C7-80E7-943FF2461732}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A0F9A175-218E-4414-B0EC-A227B0E5FA61}

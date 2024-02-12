@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using Veldrid;
 using Veldrid.SPIRV;
 
-namespace TestEtoVeldrid
+namespace TestEtoVeldrid2
 {
 	public struct VertexPositionColor
 	{
@@ -285,7 +285,7 @@ namespace TestEtoVeldrid
 		private byte[] LoadSpirvBytes(ShaderStages stage)
 		{
 			string name = $"VertexColor-{stage.ToString().ToLowerInvariant()}.450.glsl";
-			string full = $"TestEtoVeldrid.shaders.{name}";
+			string full = $"Eto.VeldridSurface.shaders.{name}";
 
 			// Precompiled SPIR-V bytecode can speed up program start by saving
 			// the need to load text files and compile them before converting

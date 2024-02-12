@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="shaders\VertexColor-fragment.450.glsl" />
+      <EmbeddedResource Include="shaders\VertexColor-vertex.450.glsl" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Veldrid" Version="4.9.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="Veldrid.SPIRV">
+        <HintPath>..\..\..\..\..\home\phil\.nuget\packages\veldrid.spirv\1.0.15\lib\netstandard2.0\Veldrid.SPIRV.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Eto.Veldrid\Eto.Veldrid.csproj" />
+    </ItemGroup>
+
+</Project>
