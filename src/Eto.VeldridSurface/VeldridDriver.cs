@@ -118,8 +118,8 @@ namespace TestEtoVeldrid2
 
 		private void Clock_Elapsed(object sender, EventArgs e)
 		{
-			drawAxes();
-			drawGrid();
+			// drawAxes();
+			// drawGrid();
 			// Draw();
 			Surface.Invalidate();
 		}
