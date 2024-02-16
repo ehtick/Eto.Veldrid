@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using Veldrid;
 using Veldrid.SPIRV;
+using VeldridEto;
 
 namespace TestEtoVeldrid2
 {
@@ -13,10 +14,10 @@ namespace TestEtoVeldrid2
 	{
 		public static uint SizeInBytes = (uint)Marshal.SizeOf(typeof(VertexPositionColor));
 
-		public Vector2 Position;
+		public Vector3 Position;
 		public RgbaFloat Color;
 
-		public VertexPositionColor(Vector2 position, RgbaFloat color)
+		public VertexPositionColor(Vector3 position, RgbaFloat color)
 		{
 			Position = position;
 			Color = color;
@@ -33,6 +34,8 @@ namespace TestEtoVeldrid2
 	/// </remarks>
 	public class VeldridDriver
 	{
+		public OVPSettings ovpSettings;
+
 		private VeldridSurface _surface;
 		public VeldridSurface Surface
 		{
@@ -41,41 +44,43 @@ namespace TestEtoVeldrid2
 			{
 				_surface = value;
 
-				Surface.MouseDown += Surface_MouseDown;
-				Surface.KeyDown += Surface_KeyDown;
-				Surface.MouseWheel += Surface_MouseWheel;
-
 				Surface.Draw += (sender, e) => Draw();
 			}
 		}
 
-		private void Surface_KeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Keys.C)
-			{
-				Clockwise = !Clockwise;
-				e.Handled = true;
-			}
-		}
+		private uint[] polyFirst;
+		private uint[] polyVertexCount;
+		private uint[] tessFirst;
+		private uint[] tessVertexCount;
+		private uint[] lineFirst;
+		private uint[] lineVertexCount;
+		private uint[] pointsFirst;
+		private uint[] gridIndices;
+		private uint[] axesIndices;
 
-		private void Surface_MouseDown(object sender, MouseEventArgs e)
-		{
-			if (e.Buttons == MouseButtons.Primary)
-			{
-				Animate = !Animate;
-				e.Handled = true;
-			}
-		}
+		private float axisZ;
+		private float gridZ;
 
-		private void Surface_MouseWheel(object sender, MouseEventArgs e)
-		{
-			Speed += (int)e.Delta.Height;
-		}
+		private DeviceBuffer GridVertexBuffer;
+		private DeviceBuffer GridIndexBuffer;
+		private DeviceBuffer AxesVertexBuffer;
+		private DeviceBuffer AxesIndexBuffer;
+
+		private DeviceBuffer LinesVertexBuffer;
+		private DeviceBuffer PointsVertexBuffer;
+		private DeviceBuffer PolysVertexBuffer;
+		private DeviceBuffer TessVertexBuffer;
+
+		private Pipeline PointsPipeline;
+		private Pipeline LinePipeline;
+		private Pipeline LinesPipeline;
+		private Pipeline FilledPipeline;
 
 		public UITimer Clock { get; } = new UITimer();
 
 		public CommandList CommandList { get; private set; }
 		public DeviceBuffer VertexBuffer { get; private set; }
+
 		public DeviceBuffer IndexBuffer { get; private set; }
 		public Shader VertexShader { get; private set; }
 		public Shader FragmentShader { get; private set; }
@@ -84,6 +89,10 @@ namespace TestEtoVeldrid2
 		public Matrix4x4 ModelMatrix { get; private set; } = Matrix4x4.Identity;
 		public DeviceBuffer ModelBuffer { get; private set; }
 		public ResourceSet ModelMatrixSet { get; private set; }
+
+		private Matrix4x4 ViewMatrix;
+		private DeviceBuffer ViewBuffer;
+		private ResourceSet ViewMatrixSet;
 
 		public bool Animate { get; set; } = true;
 
@@ -98,8 +107,10 @@ namespace TestEtoVeldrid2
 
 		private bool Ready = false;
 
-		public VeldridDriver()
+		public VeldridDriver(ref OVPSettings settings, ref VeldridSurface surface)
 		{
+			ovpSettings = settings;
+			Surface = surface;
 			Clock.Interval = 1.0f / 60.0f;
 			Clock.Elapsed += Clock_Elapsed;
 		}
@@ -108,6 +119,26 @@ namespace TestEtoVeldrid2
 
 		private DateTime CurrentTime;
 		private DateTime PreviousTime = DateTime.Now;
+
+		private void drawAxes()
+		{
+			if (!ovpSettings.drawAxes())
+			{
+				return;
+			}
+
+			float zoom = ovpSettings.getBaseZoom() * ovpSettings.getZoomFactor();
+			VertexPositionColor[] axesArray = new VertexPositionColor[4];
+			axesArray[0] = new VertexPositionColor(new Vector3(0.0f, ovpSettings.getCameraY() + Surface.RenderHeight * zoom, axisZ), new RgbaFloat(ovpSettings.axisColor.R, ovpSettings.axisColor.G, ovpSettings.axisColor.B, 1.0f));
+			axesArray[1] = new VertexPositionColor(new Vector3(0.0f, ovpSettings.getCameraY() - Surface.RenderHeight * zoom, axisZ), new RgbaFloat(ovpSettings.axisColor.R, ovpSettings.axisColor.G, ovpSettings.axisColor.B, 1.0f));
+			axesArray[2] = new VertexPositionColor(new Vector3(ovpSettings.getCameraX() + Surface.RenderWidth * zoom, 0.0f, axisZ), new RgbaFloat(ovpSettings.axisColor.R, ovpSettings.axisColor.G, ovpSettings.axisColor.B, 1.0f));
+			axesArray[3] = new VertexPositionColor(new Vector3(ovpSettings.getCameraX() - Surface.RenderWidth * zoom, 0.0f, axisZ), new RgbaFloat(ovpSettings.axisColor.R, ovpSettings.axisColor.G, ovpSettings.axisColor.B, 1.0f));
+
+			axesIndices = new uint[4] { 0, 1, 2, 3 };
+
+			updateBuffer(ref AxesVertexBuffer, axesArray, VertexPositionColor.SizeInBytes, BufferUsage.VertexBuffer);
+			updateBuffer(ref AxesIndexBuffer, axesIndices, sizeof(uint), BufferUsage.IndexBuffer);
+		}
 
 		public void Draw()
 		{
@@ -118,19 +149,19 @@ namespace TestEtoVeldrid2
 
 			CommandList.Begin();
 
-			CurrentTime = DateTime.Now;
-			if (Animate)
-			{
-				double radians = Convert.ToDouble((CurrentTime - PreviousTime).TotalMilliseconds / 10.0);
-				float degrees = Convert.ToSingle(radians * (System.Math.PI / 180.0));
-				degrees *= Speed;
-
-				ModelMatrix *= Matrix4x4.CreateFromAxisAngle(
-					new Vector3(0, 0, _direction),
-					degrees);
-			}
-			PreviousTime = CurrentTime;
+			ModelMatrix *= Matrix4x4.CreateFromAxisAngle(
+				new Vector3(0, 0, 1), 0);
 			CommandList.UpdateBuffer(ModelBuffer, 0, ModelMatrix);
+
+			float zoom = ovpSettings.getZoomFactor() * ovpSettings.getBaseZoom();
+
+			float left = ovpSettings.getCameraX() - (float)Surface.RenderWidth / 2 * zoom;
+			float right = ovpSettings.getCameraX() + (float)Surface.RenderWidth / 2 * zoom;
+			float bottom = ovpSettings.getCameraY() + (float)Surface.RenderHeight / 2 * zoom;
+			float top = ovpSettings.getCameraY() - (float)Surface.RenderHeight / 2 * zoom;
+
+			ViewMatrix = Matrix4x4.CreateOrthographicOffCenter(left, right, bottom, top, 0.0f, 1.0f);
+			CommandList.UpdateBuffer(ViewBuffer, 0, ViewMatrix);
 
 			CommandList.SetFramebuffer(Surface.Swapchain.Framebuffer);
 
@@ -141,25 +172,81 @@ namespace TestEtoVeldrid2
 			// said context. Second, this project creates its swapchain with a
 			// depth buffer, and that buffer needs to be reset at the start of
 			// each frame.
-			CommandList.ClearColorTarget(0, RgbaFloat.Pink);
+
+			RgbaFloat bgColor = new(ovpSettings.backColor.R, ovpSettings.backColor.G, ovpSettings.backColor.B, 1.0f);
+
+			CommandList.ClearColorTarget(0, bgColor);
 			CommandList.ClearDepthStencil(1.0f);
 
-			CommandList.SetVertexBuffer(0, VertexBuffer);
-			CommandList.SetIndexBuffer(IndexBuffer, IndexFormat.UInt16);
-			CommandList.SetPipeline(Pipeline);
-			CommandList.SetGraphicsResourceSet(0, ModelMatrixSet);
+			if (GridVertexBuffer != null)
+			{
+				lock (GridVertexBuffer)
+				{
+					try
+					{
+						CommandList.SetVertexBuffer(0, GridVertexBuffer);
+						CommandList.SetIndexBuffer(GridIndexBuffer, IndexFormat.UInt32);
+						CommandList.SetPipeline(LinePipeline);
+						CommandList.SetGraphicsResourceSet(0, ViewMatrixSet);
+						CommandList.SetGraphicsResourceSet(1, ModelMatrixSet);
 
-			CommandList.DrawIndexed(
-				indexCount: 4,
-				instanceCount: 1,
-				indexStart: 0,
-				vertexOffset: 0,
-				instanceStart: 0);
+						CommandList.DrawIndexed(
+							indexCount: (uint)gridIndices.Length,
+							instanceCount: 1,
+							indexStart: 0,
+							vertexOffset: 0,
+							instanceStart: 0);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Ex: " + ex);
+					}
+				}
+			}
+
+			drawAxes();
+			if (AxesVertexBuffer != null)
+			{
+				lock (AxesVertexBuffer)
+				{
+					try
+					{
+						CommandList.SetVertexBuffer(0, AxesVertexBuffer);
+						CommandList.SetIndexBuffer(AxesIndexBuffer, IndexFormat.UInt32);
+						CommandList.SetPipeline(LinePipeline);
+						CommandList.SetGraphicsResourceSet(0, ViewMatrixSet);
+						CommandList.SetGraphicsResourceSet(1, ModelMatrixSet);
+
+						CommandList.DrawIndexed(
+							indexCount: (uint)axesIndices.Length,
+							instanceCount: 1,
+							indexStart: 0,
+							vertexOffset: 0,
+							instanceStart: 0);
+					}
+					catch (Exception ex)
+					{
+						Console.WriteLine("Ex: " + ex);
+					}
+				}
+			}
 
 			CommandList.End();
 
-			Surface.GraphicsDevice.SubmitCommands(CommandList);
-			Surface.GraphicsDevice.SwapBuffers(Surface.Swapchain);
+			try
+			{
+				lock (CommandList)
+				{
+					Surface.GraphicsDevice.SubmitCommands(CommandList);
+				}
+
+				Surface.GraphicsDevice.SwapBuffers(Surface.Swapchain);
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Ex: " + ex);
+			}
+
 		}
 
 		public void SetUpVeldrid()
@@ -215,6 +302,19 @@ namespace TestEtoVeldrid2
 
 			ResourceFactory factory = Surface.GraphicsDevice.ResourceFactory;
 
+			ResourceLayout viewMatrixLayout = factory.CreateResourceLayout(
+				new ResourceLayoutDescription(
+					new ResourceLayoutElementDescription(
+						"ViewMatrix",
+						ResourceKind.UniformBuffer,
+						ShaderStages.Vertex)));
+
+			ViewBuffer = factory.CreateBuffer(
+				new BufferDescription(64, BufferUsage.UniformBuffer));
+
+			ViewMatrixSet = factory.CreateResourceSet(new ResourceSetDescription(
+				viewMatrixLayout, ViewBuffer));
+
 			var vertex = new ShaderDescription(ShaderStages.Vertex, vertexShaderSpirvBytes, "main", true);
 			var fragment = new ShaderDescription(ShaderStages.Fragment, fragmentShaderSpirvBytes, "main", true);
 			Shader[] shaders = factory.CreateFromSpirv(vertex, fragment, options);
@@ -234,10 +334,10 @@ namespace TestEtoVeldrid2
 
 			VertexPositionColor[] quadVertices =
 			{
-				new VertexPositionColor(new Vector2(-.75f, -.75f), RgbaFloat.Red),
-				new VertexPositionColor(new Vector2(.75f, -.75f), RgbaFloat.Green),
-				new VertexPositionColor(new Vector2(-.75f, .75f), RgbaFloat.Blue),
-				new VertexPositionColor(new Vector2(.75f, .75f), RgbaFloat.Yellow)
+				new VertexPositionColor(new Vector3(new Vector2(-.75f, -.75f), 0), RgbaFloat.Red),
+				new VertexPositionColor(new Vector3(new Vector2(.75f, -.75f), 0), RgbaFloat.Green),
+				new VertexPositionColor(new Vector3(new Vector2(-.75f, .75f), 0), RgbaFloat.Blue),
+				new VertexPositionColor(new Vector3(new Vector2(.75f, .75f), 0), RgbaFloat.Yellow)
 			};
 
 			ushort[] quadIndices = { 0, 1, 2, 3 };
@@ -279,7 +379,48 @@ namespace TestEtoVeldrid2
 				Outputs = Surface.Swapchain.Framebuffer.OutputDescription
 			});
 
+
+			LinePipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
+			{
+				BlendState = BlendStateDescription.SingleOverrideBlend,
+				DepthStencilState = new DepthStencilStateDescription(
+					depthTestEnabled: true,
+					depthWriteEnabled: true,
+					comparisonKind: ComparisonKind.LessEqual),
+				RasterizerState = new RasterizerStateDescription(
+					cullMode: FaceCullMode.Back,
+					fillMode: PolygonFillMode.Solid,
+					frontFace: FrontFace.Clockwise,
+					depthClipEnabled: true,
+					scissorTestEnabled: false),
+				PrimitiveTopology = PrimitiveTopology.LineList,
+				ResourceLayouts = new[] { viewMatrixLayout, modelMatrixLayout },
+				ShaderSet = new ShaderSetDescription(
+					vertexLayouts: new[] { vertexLayout },
+					shaders: shaders),
+				Outputs = Surface.Swapchain.Framebuffer.OutputDescription
+			});
+
 			CommandList = factory.CreateCommandList();
+		}
+
+		public void updateBuffer<T>(ref DeviceBuffer buffer, T[] data, uint elementSize, BufferUsage usage)
+			where T : unmanaged
+		{
+			switch (data.Length)
+			{
+				case > 0:
+				{
+					buffer?.Dispose();
+
+					ResourceFactory factory = Surface.GraphicsDevice.ResourceFactory;
+
+					buffer = factory.CreateBuffer(new BufferDescription(elementSize * (uint)data.Length, usage));
+
+					Surface.GraphicsDevice.UpdateBuffer(buffer, 0, data);
+					break;
+				}
+			}
 		}
 
 		private byte[] LoadSpirvBytes(ShaderStages stage)

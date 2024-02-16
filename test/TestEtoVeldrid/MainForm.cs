@@ -2,6 +2,7 @@
 using Eto.Veldrid;
 using TestEtoVeldrid2;
 using Veldrid;
+using VeldridEto;
 
 namespace TestEtoVeldrid
 {
@@ -63,10 +64,9 @@ namespace TestEtoVeldrid
 
 			Content = Surface;
 
-			Driver = new VeldridDriver
-			{
-				Surface = Surface
-			};
+			OVPSettings settings = new OVPSettings();
+
+			Driver = new VeldridDriver(ref settings, ref Surface);
 
 			Surface.VeldridInitialized += (sender, e) =>
 			{
