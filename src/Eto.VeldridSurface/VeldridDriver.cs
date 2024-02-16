@@ -532,21 +532,8 @@ namespace TestEtoVeldrid2
 			ModelMatrixSet = factory.CreateResourceSet(new ResourceSetDescription(
 				modelMatrixLayout, ModelBuffer));
 
-			VertexPositionColor[] quadVertices =
-			{
-				new VertexPositionColor(new Vector3(new Vector2(-.75f, -.75f), 0), RgbaFloat.Red),
-				new VertexPositionColor(new Vector3(new Vector2(.75f, -.75f), 0), RgbaFloat.Green),
-				new VertexPositionColor(new Vector3(new Vector2(-.75f, .75f), 0), RgbaFloat.Blue),
-				new VertexPositionColor(new Vector3(new Vector2(.75f, .75f), 0), RgbaFloat.Yellow)
-			};
-
-			ushort[] quadIndices = { 0, 1, 2, 3 };
-
 			VertexBuffer = factory.CreateBuffer(new BufferDescription(4 * VertexPositionColor.SizeInBytes, BufferUsage.VertexBuffer));
 			IndexBuffer = factory.CreateBuffer(new BufferDescription(4 * sizeof(ushort), BufferUsage.IndexBuffer));
-
-			Surface.GraphicsDevice.UpdateBuffer(VertexBuffer, 0, quadVertices);
-			Surface.GraphicsDevice.UpdateBuffer(IndexBuffer, 0, quadIndices);
 
 			// Veldrid.SPIRV, when cross-compiling to HLSL, will always produce
 			// TEXCOORD semantics; VertexElementSemantic.TextureCoordinate thus
