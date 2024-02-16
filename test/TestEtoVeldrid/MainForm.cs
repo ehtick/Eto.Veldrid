@@ -76,8 +76,8 @@ namespace TestEtoVeldrid
 			};
 
 			// TODO: Make this binding actually work both ways.
-			CmdAnimate.Bind<bool>("Checked", Driver, "Animate");
-			CmdClockwise.Bind<bool>("Checked", Driver, "Clockwise");
+			//CmdAnimate.Bind<bool>("Checked", Driver, "Animate");
+			//CmdClockwise.Bind<bool>("Checked", Driver, "Clockwise");
 		}
 
 		private void SetUpVeldrid()
