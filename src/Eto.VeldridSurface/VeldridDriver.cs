@@ -1,4 +1,5 @@
-﻿using Eto.Forms;
+﻿using Eto.Drawing;
+using Eto.Forms;
 using Eto.Veldrid;
 using System;
 using System.IO;
@@ -115,10 +116,208 @@ namespace TestEtoVeldrid2
 			Clock.Elapsed += Clock_Elapsed;
 		}
 
-		private void Clock_Elapsed(object sender, EventArgs e) => Surface.Invalidate();
+		private void Clock_Elapsed(object sender, EventArgs e)
+		{
+			drawAxes();
+			drawGrid();
+			// Draw();
+			Surface.Invalidate();
+		}
 
 		private DateTime CurrentTime;
 		private DateTime PreviousTime = DateTime.Now;
+
+		private Point WorldToScreen(float x, float y)
+		{
+			// int oX = (int)((x - ovpSettings.getCameraX() / (ovpSettings.getZoomFactor() * ovpSettings.getBaseZoom())) + Surface.RenderWidth / 2);
+
+			double oX_2 = (double)Surface.RenderWidth / 2;
+			double oX_3 = ovpSettings.getCameraX() / (ovpSettings.getZoomFactor() * ovpSettings.getBaseZoom());
+			double oX_4 = x;
+
+			int oXC = (int)(oX_4 - oX_3 + oX_2);
+
+			// int oY = (int)((y - ovpSettings.getCameraY() / (ovpSettings.getZoomFactor() * ovpSettings.getBaseZoom())) + Surface.RenderHeight / 2);
+
+			double oY_2 = (double)Surface.RenderHeight / 2;
+			double oY_3 = ovpSettings.getCameraY() / (ovpSettings.getZoomFactor() * ovpSettings.getBaseZoom());
+			double oY_4 = y;
+
+			int oYC = (int)(oY_4 - oY_3 + oY_2);
+
+			return new Point(oXC, oYC);
+		}
+
+		private Size WorldToScreen(SizeF pt)
+		{
+			Point pt1 = WorldToScreen(0, 0);
+			Point pt2 = WorldToScreen(pt.Width, pt.Height);
+			return new Size(pt2.X - pt1.X, pt2.Y - pt1.Y);
+		}
+		private void drawGrid()
+		{
+			if (!ovpSettings.drawGrid())
+			{
+				return;
+			}
+
+			float spacing = ovpSettings.gridSpacing();
+			if (ovpSettings.isGridDynamic())
+			{
+				while (WorldToScreen(new SizeF(spacing, 0.0f)).Width > 12.0f)
+				{
+					spacing /= 10.0f;
+				}
+
+				while (WorldToScreen(new SizeF(spacing, 0.0f)).Width < 4.0f)
+				{
+					spacing *= 10.0f;
+				}
+			}
+
+			float zoom = ovpSettings.getZoomFactor() * ovpSettings.getBaseZoom();
+			float x = ovpSettings.getCameraX();
+			float y = ovpSettings.getCameraY();
+
+			List<VertexPositionColor> grid = new();
+
+			if (WorldToScreen(new SizeF(spacing, 0.0f)).Width >= 4.0f)
+			{
+				int k = 0;
+				for (float i = 0; i > -(Surface.RenderWidth * zoom) + x; i -= spacing)
+				{
+					float r = 0.0f;
+					float g = 0.0f;
+					float b = 0.0f;
+					switch (k)
+					{
+						case <= 9:
+							r = ovpSettings.minorGridColor.R;
+							g = ovpSettings.minorGridColor.G;
+							b = ovpSettings.minorGridColor.B;
+							break;
+						case 10:
+							r = ovpSettings.majorGridColor.R;
+							g = ovpSettings.majorGridColor.G;
+							b = ovpSettings.majorGridColor.B;
+							k = 0;
+							break;
+					}
+
+					k++;
+					grid.Add(new VertexPositionColor(new Vector3(i, y + zoom * Surface.RenderHeight, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+					grid.Add(new VertexPositionColor(new Vector3(i, y + zoom * -Surface.RenderHeight, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+				}
+
+				k = 0;
+				for (float i = 0; i < Surface.RenderWidth * zoom + x; i += spacing)
+				{
+					float r = 0.0f;
+					float g = 0.0f;
+					float b = 0.0f;
+					switch (k)
+					{
+						case <= 9:
+							r = ovpSettings.minorGridColor.R;
+							g = ovpSettings.minorGridColor.G;
+							b = ovpSettings.minorGridColor.B;
+							break;
+						case 10:
+							r = ovpSettings.majorGridColor.R;
+							g = ovpSettings.majorGridColor.G;
+							b = ovpSettings.majorGridColor.B;
+							k = 0;
+							break;
+					}
+
+					k++;
+					grid.Add(new VertexPositionColor(new Vector3(i, y + zoom * Surface.RenderHeight, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+					grid.Add(new VertexPositionColor(new Vector3(i, y + zoom * -Surface.RenderHeight, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+				}
+
+				k = 0;
+				for (float i = 0; i > -(Surface.RenderHeight * zoom) + y; i -= spacing)
+				{
+					float r = 0.0f;
+					float g = 0.0f;
+					float b = 0.0f;
+					switch (k)
+					{
+						case <= 9:
+							r = ovpSettings.minorGridColor.R;
+							g = ovpSettings.minorGridColor.G;
+							b = ovpSettings.minorGridColor.B;
+							break;
+						case 10:
+							r = ovpSettings.majorGridColor.R;
+							g = ovpSettings.majorGridColor.G;
+							b = ovpSettings.majorGridColor.B;
+							k = 0;
+							break;
+					}
+
+					k++;
+					grid.Add(new VertexPositionColor(new Vector3(x + zoom * Surface.RenderWidth, i, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+					grid.Add(new VertexPositionColor(new Vector3(x + zoom * -Surface.RenderWidth, i, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+				}
+
+				k = 0;
+				for (float i = 0; i < Surface.RenderHeight * zoom + y; i += spacing)
+				{
+					float r = 0.0f;
+					float g = 0.0f;
+					float b = 0.0f;
+					switch (k)
+					{
+						case <= 9:
+							r = ovpSettings.minorGridColor.R;
+							g = ovpSettings.minorGridColor.G;
+							b = ovpSettings.minorGridColor.B;
+							break;
+						case 10:
+							r = ovpSettings.majorGridColor.R;
+							g = ovpSettings.majorGridColor.G;
+							b = ovpSettings.majorGridColor.B;
+							k = 0;
+							break;
+					}
+
+					k++;
+					grid.Add(new VertexPositionColor(new Vector3(x + zoom * Surface.RenderWidth, i, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+					grid.Add(new VertexPositionColor(new Vector3(x + zoom * -Surface.RenderWidth, i, gridZ),
+						new RgbaFloat(r, g, b, 1.0f)));
+				}
+			}
+
+			uint gridCount = (uint)grid.Count;
+
+			switch (gridCount)
+			{
+				case > 0:
+				{
+					gridIndices = new uint[gridCount];
+					for (uint i = 0; i < gridIndices.Length; i++)
+					{
+						gridIndices[i] = i;
+					}
+
+					updateBuffer(ref GridVertexBuffer, grid.ToArray(), VertexPositionColor.SizeInBytes, BufferUsage.VertexBuffer);
+					updateBuffer(ref GridIndexBuffer, gridIndices, sizeof(uint), BufferUsage.IndexBuffer);
+					break;
+				}
+				default:
+					GridVertexBuffer = null;
+					GridIndexBuffer = null;
+					break;
+			}
+		}
 
 		private void drawAxes()
 		{
@@ -178,6 +377,7 @@ namespace TestEtoVeldrid2
 			CommandList.ClearColorTarget(0, bgColor);
 			CommandList.ClearDepthStencil(1.0f);
 
+			drawGrid();
 			if (GridVertexBuffer != null)
 			{
 				lock (GridVertexBuffer)
