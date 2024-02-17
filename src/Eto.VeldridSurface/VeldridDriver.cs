@@ -542,7 +542,7 @@ namespace TestEtoVeldrid2
 			//   https://github.com/mellinoe/veldrid/issues/121
 			//
 			var vertexLayout = new VertexLayoutDescription(
-				new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float2),
+				new VertexElementDescription("Position", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float3),
 				new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate, VertexElementFormat.Float4));
 
 			Pipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
