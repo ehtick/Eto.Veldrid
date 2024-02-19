@@ -88,7 +88,6 @@ namespace TestEtoVeldrid2
 		private DeviceBuffer PolysVertexBuffer;
 		private DeviceBuffer TessVertexBuffer;
 
-		public Pipeline Pipeline { get; private set; }
 		private Pipeline PointsPipeline;
 		private Pipeline LinePipeline;
 		private Pipeline LinesPipeline;
@@ -164,6 +163,11 @@ namespace TestEtoVeldrid2
 			{
 				return;
 			}
+
+			drawAxes();
+			drawGrid();
+			drawLines();
+			drawPolygons();
 
 			updateHostFunc?.Invoke();
 			Surface.Invalidate();
@@ -1290,9 +1294,9 @@ namespace TestEtoVeldrid2
 								CommandList.Draw(tessVertexCount[l], 1, tessFirst[l], 0);
 							}
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-
+							int xx = 2;
 						}
 					}
 				}
@@ -1314,9 +1318,9 @@ namespace TestEtoVeldrid2
 							CommandList.Draw(polyVertexCount[l], 1, polyFirst[l], 0);
 						}
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
-
+						int xx = 2;
 					}
 				}
 			}
@@ -1337,9 +1341,9 @@ namespace TestEtoVeldrid2
 							CommandList.Draw(lineVertexCount[l], 1, lineFirst[l], 0);
 						}
 					}
-					catch (Exception)
+					catch (Exception ex)
 					{
-
+						int xx = 2;
 					}
 				}
 			}
@@ -1362,9 +1366,9 @@ namespace TestEtoVeldrid2
 								CommandList.Draw(3, 1, t, 0);
 							}
 						}
-						catch (Exception)
+						catch (Exception ex)
 						{
-
+							int xx = 2;
 						}
 					}
 				}
@@ -1488,28 +1492,6 @@ namespace TestEtoVeldrid2
 				new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate,
 					VertexElementFormat.Float4));
 
-			Pipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
-			{
-				BlendState = BlendStateDescription.SingleOverrideBlend,
-				DepthStencilState = new DepthStencilStateDescription(
-					depthTestEnabled: true,
-					depthWriteEnabled: true,
-					comparisonKind: ComparisonKind.LessEqual),
-				RasterizerState = new RasterizerStateDescription(
-					cullMode: FaceCullMode.Back,
-					fillMode: PolygonFillMode.Solid,
-					frontFace: FrontFace.Clockwise,
-					depthClipEnabled: true,
-					scissorTestEnabled: false),
-				PrimitiveTopology = PrimitiveTopology.TriangleStrip,
-				ResourceLayouts = new[] { modelMatrixLayout },
-				ShaderSet = new ShaderSetDescription(
-					vertexLayouts: new VertexLayoutDescription[] { vertexLayout },
-					shaders: shaders),
-				Outputs = Surface.Swapchain.Framebuffer.OutputDescription
-			});
-
-
 			LinePipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
 			{
 				BlendState = BlendStateDescription.SingleOverrideBlend,
@@ -1524,6 +1506,48 @@ namespace TestEtoVeldrid2
 					depthClipEnabled: true,
 					scissorTestEnabled: false),
 				PrimitiveTopology = PrimitiveTopology.LineList,
+				ResourceLayouts = new[] { viewMatrixLayout, modelMatrixLayout },
+				ShaderSet = new ShaderSetDescription(
+					vertexLayouts: new[] { vertexLayout },
+					shaders: shaders),
+				Outputs = Surface.Swapchain.Framebuffer.OutputDescription
+			});
+
+			LinesPipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
+			{
+				BlendState = BlendStateDescription.SingleAlphaBlend,
+				DepthStencilState = new DepthStencilStateDescription(
+					depthTestEnabled: false,
+					depthWriteEnabled: false,
+					comparisonKind: ComparisonKind.LessEqual),
+				RasterizerState = new RasterizerStateDescription(
+					cullMode: FaceCullMode.Back,
+					fillMode: PolygonFillMode.Solid,
+					frontFace: FrontFace.Clockwise,
+					depthClipEnabled: false,
+					scissorTestEnabled: false),
+				PrimitiveTopology = PrimitiveTopology.LineStrip,
+				ResourceLayouts = new[] { viewMatrixLayout, modelMatrixLayout },
+				ShaderSet = new ShaderSetDescription(
+					vertexLayouts: new[] { vertexLayout },
+					shaders: shaders),
+				Outputs = Surface.Swapchain.Framebuffer.OutputDescription
+			});
+
+			FilledPipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
+			{
+				BlendState = BlendStateDescription.SingleAlphaBlend,
+				DepthStencilState = new DepthStencilStateDescription(
+					depthTestEnabled: false,
+					depthWriteEnabled: false,
+					comparisonKind: ComparisonKind.LessEqual),
+				RasterizerState = new RasterizerStateDescription(
+					cullMode: FaceCullMode.None,
+					fillMode: PolygonFillMode.Solid,
+					frontFace: FrontFace.CounterClockwise,
+					depthClipEnabled: false,
+					scissorTestEnabled: false),
+				PrimitiveTopology = PrimitiveTopology.TriangleStrip,
 				ResourceLayouts = new[] { viewMatrixLayout, modelMatrixLayout },
 				ShaderSet = new ShaderSetDescription(
 					vertexLayouts: new[] { vertexLayout },
