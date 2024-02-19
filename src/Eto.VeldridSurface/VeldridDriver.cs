@@ -158,31 +158,28 @@ namespace TestEtoVeldrid2
 
 		public void updateViewport()
 		{
+			pUpdateViewport();
+		}
+
+		private void pUpdateViewport()
+		{
 			if ((!ovpSettings.changed) || (Surface.GraphicsDevice == null) ||
 			    (!Surface.Visible) || (Surface.Width <= 0) || (Surface.Height <= 0))
 			{
 				return;
 			}
-
 			drawAxes();
 			drawGrid();
 			drawLines();
 			drawPolygons();
-
 			updateHostFunc?.Invoke();
 			Surface.Invalidate();
+			ovpSettings.changed = false;
 		}
 
 		private void Clock_Elapsed(object sender, EventArgs e)
 		{
-			if (!ovpSettings.changed)
-			{
-				return;
-			}
-			// drawAxes();
-			// drawGrid();
-			// Draw();
-			Surface.Invalidate();
+			pUpdateViewport();
 		}
 
 		private DateTime CurrentTime;
@@ -1296,7 +1293,7 @@ namespace TestEtoVeldrid2
 						}
 						catch (Exception ex)
 						{
-							int xx = 2;
+							Console.WriteLine("Ex: " + ex);
 						}
 					}
 				}
@@ -1320,7 +1317,7 @@ namespace TestEtoVeldrid2
 					}
 					catch (Exception ex)
 					{
-						int xx = 2;
+						Console.WriteLine("Ex: " + ex);
 					}
 				}
 			}
@@ -1343,7 +1340,7 @@ namespace TestEtoVeldrid2
 					}
 					catch (Exception ex)
 					{
-						int xx = 2;
+						Console.WriteLine("Ex: " + ex);
 					}
 				}
 			}
@@ -1368,7 +1365,7 @@ namespace TestEtoVeldrid2
 						}
 						catch (Exception ex)
 						{
-							int xx = 2;
+							Console.WriteLine("Ex: " + ex);
 						}
 					}
 				}
