@@ -141,6 +141,14 @@ namespace TestEtoVeldrid2
 				new VertexElementDescription("Color", VertexElementSemantic.TextureCoordinate,
 					VertexElementFormat.Float4));
 
+			create_pipelines(ref factory, ref viewMatrixLayout, ref modelMatrixLayout, ref shaders, ref vertexLayout);
+
+			CommandList = factory.CreateCommandList();
+		}
+
+		private void create_pipelines(ref ResourceFactory factory, ref ResourceLayout viewMatrixLayout,
+			ref ResourceLayout modelMatrixLayout, ref Shader[] shaders, ref VertexLayoutDescription vertexLayout)
+		{
 			LinePipeline = factory.CreateGraphicsPipeline(new GraphicsPipelineDescription
 			{
 				BlendState = BlendStateDescription.SingleOverrideBlend,
@@ -203,8 +211,6 @@ namespace TestEtoVeldrid2
 					shaders: shaders),
 				Outputs = Surface.Swapchain.Framebuffer.OutputDescription
 			});
-
-			CommandList = factory.CreateCommandList();
 		}
 
 		private byte[] LoadSpirvBytes(ShaderStages stage)

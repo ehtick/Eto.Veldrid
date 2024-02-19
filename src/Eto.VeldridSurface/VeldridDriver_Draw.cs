@@ -13,6 +13,7 @@ public partial class VeldridDriver
 		{
 			return;
 		}
+
 		drawAxes();
 		drawGrid();
 		drawLines();
@@ -21,6 +22,7 @@ public partial class VeldridDriver
 		Surface.Invalidate();
 		ovpSettings.changed = false;
 	}
+
 	private void drawPolygons()
 	{
 		int polyListCount = ovpSettings.polyList.Count;
@@ -493,6 +495,28 @@ public partial class VeldridDriver
 		CommandList.ClearColorTarget(0, bgColor);
 		CommandList.ClearDepthStencil(1.0f);
 
+		populate_command_list();
+
+		CommandList.End();
+
+		try
+		{
+			lock (CommandList)
+			{
+				Surface.GraphicsDevice.SubmitCommands(CommandList);
+			}
+
+			Surface.GraphicsDevice.SwapBuffers(Surface.Swapchain);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine("Ex: " + ex);
+		}
+
+	}
+
+	private void populate_command_list()
+	{
 		drawGrid();
 		drawAxes();
 		drawLines();
@@ -500,6 +524,11 @@ public partial class VeldridDriver
 
 		if (GridVertexBuffer != null)
 		{
+			if (LinePipeline == null)
+			{
+				throw new("populate_command_list : LinePipeline not initialized!");
+			}
+
 			lock (GridVertexBuffer)
 			{
 				try
@@ -526,6 +555,11 @@ public partial class VeldridDriver
 
 		if (AxesVertexBuffer != null)
 		{
+			if (LinePipeline == null)
+			{
+				throw new("populate_command_list : LinePipeline not initialized!");
+			}
+
 			lock (AxesVertexBuffer)
 			{
 				try
@@ -554,6 +588,11 @@ public partial class VeldridDriver
 		{
 			if (TessVertexBuffer != null)
 			{
+				if (LinePipeline == null)
+				{
+					throw new("populate_command_list : FilledPipeline not initialized!");
+				}
+
 				lock (TessVertexBuffer)
 				{
 					try
@@ -578,6 +617,11 @@ public partial class VeldridDriver
 
 		if (PolysVertexBuffer != null)
 		{
+			if (LinePipeline == null)
+			{
+				throw new("populate_command_list : LinesPipeline not initialized!");
+			}
+
 			lock (PolysVertexBuffer)
 			{
 				try
@@ -601,6 +645,11 @@ public partial class VeldridDriver
 
 		if (LinesVertexBuffer != null && ovpSettings.drawDrawn())
 		{
+			if (LinePipeline == null)
+			{
+				throw new("populate_command_list : LinesPipeline not initialized!");
+			}
+
 			lock (LinesVertexBuffer)
 			{
 				try
@@ -626,6 +675,11 @@ public partial class VeldridDriver
 		{
 			if (PointsVertexBuffer != null)
 			{
+				if (LinePipeline == null)
+				{
+					throw new("populate_command_list : FilledPipeline not initialized!");
+				}
+
 				lock (PointsVertexBuffer)
 				{
 					try
@@ -647,23 +701,6 @@ public partial class VeldridDriver
 				}
 			}
 		}
-
-		CommandList.End();
-
-		try
-		{
-			lock (CommandList)
-			{
-				Surface.GraphicsDevice.SubmitCommands(CommandList);
-			}
-
-			Surface.GraphicsDevice.SwapBuffers(Surface.Swapchain);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine("Ex: " + ex);
-		}
-
 	}
 
 	private void updateBuffer<T>(ref DeviceBuffer buffer, T[] data, uint elementSize, BufferUsage usage)
