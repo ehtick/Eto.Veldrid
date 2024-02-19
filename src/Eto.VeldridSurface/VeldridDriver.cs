@@ -131,8 +131,9 @@ namespace TestEtoVeldrid2
 				Surface.MouseUp += upHandler;
 				Surface.MouseWheel += zoomHandler;
 				Surface.GotFocus += addKeyHandler;
-				Surface.MouseEnter += setFocus;
+				Surface.MouseEnter += addKeyHandler;// setFocus;
 				Surface.LostFocus += removeKeyHandler;
+				Surface.MouseLeave += removeKeyHandler;
 			}
 			catch (Exception ex)
 			{
