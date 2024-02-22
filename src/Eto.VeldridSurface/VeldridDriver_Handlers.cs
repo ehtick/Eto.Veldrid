@@ -6,34 +6,12 @@ namespace TestEtoVeldrid2;
 
 public partial class VeldridDriver
 {
-	private void addKeyHandler(object sender, EventArgs e)
-	{
-		switch (keyHandlerApplied)
-		{
-			case true:
-				return;
-			default:
-				Surface.KeyDown += keyHandler;
-				keyHandlerApplied = true;
-				break;
-		}
-	}
-
-	private void removeKeyHandler(object sender, EventArgs e)
-	{
-		switch (keyHandlerApplied)
-		{
-			case false:
-				return;
-		}
-
-		hasFocus = false;
-		Surface.KeyDown -= keyHandler;
-		keyHandlerApplied = false;
-	}
-
 	private void keyHandler(object sender, KeyEventArgs e)
 	{
+		if (!hasFocus)
+		{
+			return;
+		}
 		//e.Handled = true;
 
 		if (ovpSettings.isLocked())
@@ -185,6 +163,10 @@ public partial class VeldridDriver
 
 	private void downHandler(object sender, MouseEventArgs e)
 	{
+		if (!hasFocus)
+		{
+			return;
+		}
 		switch (e.Buttons)
 		{
 			case MouseButtons.Primary:
@@ -202,15 +184,23 @@ public partial class VeldridDriver
 
 	private void setFocus(object sender, EventArgs e)
 	{
-		switch (hasFocus)
+		if (hasFocus)
 		{
-			case true:
-				return;
-			default:
-				Surface.Focus();
-				hasFocus = true;
-				break;
+			return;
 		}
+
+		Surface.Focus();
+		hasFocus = true;
+	}
+
+	private void removeFocus(object sender, EventArgs e)
+	{
+		if (!hasFocus)
+		{
+			return;
+		}
+
+		hasFocus = false;
 	}
 
 	private void Clock_Elapsed(object sender, EventArgs e)
@@ -226,10 +216,11 @@ public partial class VeldridDriver
 			Surface.MouseMove += dragHandler;
 			Surface.MouseUp += upHandler;
 			Surface.MouseWheel += zoomHandler;
-			Surface.GotFocus += addKeyHandler;
-			Surface.MouseEnter += addKeyHandler; // setFocus;
-			Surface.LostFocus += removeKeyHandler;
-			Surface.MouseLeave += removeKeyHandler;
+			Surface.MouseEnter += setFocus;
+			Surface.MouseLeave += removeFocus;
+			Surface.KeyDown += keyHandler;
+			keyHandlerApplied = true;
+			// Surface.MouseLeave += removeKeyHandler;
 		}
 		catch (Exception ex)
 		{
