@@ -68,7 +68,15 @@ namespace TestEtoVeldrid
 			Surface = new VeldridSurface(backend, options);
 			Surface.Size = new Eto.Drawing.Size(200, 200);
 
-			Content = Surface;
+			TableLayout tl = new();
+			tl.Rows.Add(new());
+			TextBox tb = new();
+			tl.Rows[^1].Cells.Add(new() {Control = tb});
+
+			tl.Rows.Add(new() {ScaleHeight = true});
+			tl.Rows[^1].Cells.Add(new() {Control = Surface});
+
+			Content = tl;
 
 			ovpSettings = new OVPSettings();
 			addPolys();
