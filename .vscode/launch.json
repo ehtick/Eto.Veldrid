@@ -14,7 +14,7 @@
                 "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Mac64/Debug/net5.0/osx-x64/TestEtoVeldrid.Mac64.app/Contents/MacOS/TestEtoVeldrid.Mac64"
             },
             "linux": {
-                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Gtk/Debug/net5.0/linux-x64/TestEtoVeldrid.Gtk.dll"
+                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Gtk/Debug/net7.0/linux-x64/TestEtoVeldrid.Gtk.dll"
             },
             "windows": {
                 "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Wpf/Debug/net5.0-windows/win-x64/TestEtoVeldrid.Wpf.dll"
