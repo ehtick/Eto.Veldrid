@@ -12,10 +12,11 @@ namespace Eto.Veldrid
 	[Handler(typeof(VeldridSurface.IHandler))]
 	public class VeldridSurface : Control
 	{
+		[AutoInitialize(false)]
 		public new interface IHandler : Control.IHandler
 		{
 			Size RenderSize { get; }
-			Swapchain CreateSwapchain();
+			Swapchain? CreateSwapchain();
 		}
 
 		new IHandler Handler => (IHandler)base.Handler;
@@ -71,9 +72,9 @@ namespace Eto.Veldrid
 		public int RenderHeight => RenderSize.Height;
 
 		public GraphicsBackend Backend { get; private set; }
-		public GraphicsDevice GraphicsDevice { get; private set; }
-		public GraphicsDeviceOptions GraphicsDeviceOptions { get; private set; } = new GraphicsDeviceOptions();
-		public Swapchain Swapchain { get; private set; }
+		public GraphicsDevice? GraphicsDevice { get; private set; }
+		public GraphicsDeviceOptions GraphicsDeviceOptions { get; private set; }
+		public Swapchain? Swapchain { get; private set; }
 
 		public const string VeldridInitializedEvent = "VeldridSurface.VeldridInitialized";
 		public const string DrawEvent = "VeldridSurface.Draw";
@@ -100,13 +101,15 @@ namespace Eto.Veldrid
 		{
 		}
 		public VeldridSurface(GraphicsBackend backend)
+			: this(backend, new GraphicsDeviceOptions())
 		{
-			Backend = backend;
 		}
+
 		public VeldridSurface(GraphicsBackend backend, GraphicsDeviceOptions gdOptions)
 		{
 			Backend = backend;
 			GraphicsDeviceOptions = gdOptions;
+			Initialize();
 		}
 
 		private static GraphicsBackend GetPreferredBackend()

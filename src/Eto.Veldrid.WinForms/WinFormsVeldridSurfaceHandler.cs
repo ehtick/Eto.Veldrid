@@ -12,7 +12,7 @@ namespace Eto.Veldrid.WinForms
 {
 	public class WinFormsVeldridSurfaceHandler : WindowsControl<WinFormsVeldridUserControl, VeldridSurface, VeldridSurface.ICallback>, VeldridSurface.IHandler
 	{
-		public Size RenderSize => Size.Round((SizeF)Widget.Size * Scale);
+		public Eto.Drawing.Size RenderSize => Eto.Drawing.Size.Round((Eto.Drawing.SizeF)Widget.Size * Scale);
 
 		float Scale => Widget.ParentWindow?.LogicalPixelSize ?? 1;
 
@@ -24,13 +24,13 @@ namespace Eto.Veldrid.WinForms
 			Control.HandleCreated += Control_HandleCreated;
 		}
 
-		public Swapchain CreateSwapchain()
+		public Swapchain? CreateSwapchain()
 		{
-			Swapchain swapchain;
+			Swapchain? swapchain;
 
 			if (Widget.Backend == GraphicsBackend.OpenGL)
 			{
-				swapchain = Widget.GraphicsDevice.MainSwapchain;
+				swapchain = Widget.GraphicsDevice?.MainSwapchain;
 			}
 			else
 			{
@@ -44,7 +44,7 @@ namespace Eto.Veldrid.WinForms
 					Marshal.GetHINSTANCE(typeof(VeldridSurface).Module));
 
 				var renderSize = RenderSize;
-				swapchain = Widget.GraphicsDevice.ResourceFactory.CreateSwapchain(
+				swapchain = Widget.GraphicsDevice?.ResourceFactory.CreateSwapchain(
 					new SwapchainDescription(
 						source,
 						(uint)renderSize.Width,
@@ -57,7 +57,7 @@ namespace Eto.Veldrid.WinForms
 			return swapchain;
 		}
 
-		private void Control_HandleCreated(object sender, EventArgs e)
+		private void Control_HandleCreated(object? sender, EventArgs e)
 		{
 			if (RenderSize.IsEmpty)
 				return;
@@ -67,7 +67,7 @@ namespace Eto.Veldrid.WinForms
 			Widget.SizeChanged += Widget_SizeChanged;
 		}
 
-		private void Widget_SizeChanged(object sender, EventArgs e)
+		private void Widget_SizeChanged(object? sender, EventArgs e)
 		{
 			Callback.OnResize(Widget, new ResizeEventArgs(RenderSize));
 		}

@@ -1,15 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net462</TargetFrameworks>
-    <DefineConstants>MONOMAC</DefineConstants>
-    <MacBuildBundle>false</MacBuildBundle>
+    <TargetFramework>net7.0-macos10.15</TargetFramework>
     <Title>Veldrid Mac implementation for Eto.Forms</Title>
     <Description>This provides the Mac64 implementation of Eto.Veldrid for Eto.Forms</Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.8.2" />
+    <PackageReference Include="Eto.Platform.macOS" Version="2.8.2" />
   </ItemGroup>
 
   <ItemGroup>

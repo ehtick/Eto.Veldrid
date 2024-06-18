@@ -8,6 +8,11 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>10.0</LangVersion>
+
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
     <RestoreAdditionalProjectSources>https://www.myget.org/F/eto/</RestoreAdditionalProjectSources>
 
     <TopLevelDirectory>$(MSBuildThisFileDirectory)</TopLevelDirectory>
@@ -28,7 +33,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DevVersion>0.1.0</DevVersion>
+    <DevVersion>0.2.0</DevVersion>
 
     <!-- set version from tag -->
     <Version Condition="$(BuildBranch.StartsWith('refs/tags/'))">$(BuildBranch.Substring(10))</Version>

@@ -4,7 +4,7 @@ using System;
 #if MONOMAC
 using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
-#elif XAMMAC2
+#else
 using AppKit;
 using CoreGraphics;
 #endif
@@ -19,9 +19,9 @@ namespace Eto.Veldrid.Mac
 
 		public bool CanFocus { get; set; } = true;
 
-		public WeakReference WeakHandler { get; set; }
+		public WeakReference? WeakHandler { get; set; }
 
-		public event EventHandler Draw;
+		public event EventHandler? Draw;
 
 		public override void DrawRect(CGRect dirtyRect)
 		{
