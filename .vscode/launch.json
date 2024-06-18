@@ -11,34 +11,31 @@
             "preLaunchTask": "build",
             "program": "",
             "osx": {
-                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Mac64/Debug/net5.0/osx-x64/TestEtoVeldrid.Mac64.app/Contents/MacOS/TestEtoVeldrid.Mac64"
+                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Mac64/Debug/net8.0/TestEtoVeldrid.Mac64.app/Contents/MacOS/TestEtoVeldrid.Mac64"
             },
             "linux": {
-                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Gtk/Debug/net7.0/linux-x64/TestEtoVeldrid.Gtk.dll"
+                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Gtk/Debug/net8.0/linux-x64/TestEtoVeldrid.Gtk.dll"
             },
             "windows": {
-                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Wpf/Debug/net5.0-windows/win-x64/TestEtoVeldrid.Wpf.dll"
+                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Wpf/Debug/net8.0-windows/win-x64/TestEtoVeldrid.Wpf.dll"
             },
             "console": "internalConsole",
             "stopAtEntry": false
         },
         {
-            "name": "Launch Mono",
-            "type": "mono",
+            "name": "Launch macOS",
+            "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             "program": "",
             "osx": {
-                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Mac64/Debug/net48/osx-x64/TestEtoVeldrid.Mac64.app/Contents/MacOS/TestEtoVeldrid.Mac64",
-                "useRuntime": false
+                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.macOS/Debug/net8.0-macos/TestEtoVeldrid.macOS.app/Contents/MacOS/TestEtoVeldrid.macOS"
             },
-            "linux": {
-                "program": "${workspaceFolder}/artifacts/bin/TestEtoVeldrid.Gtk/Debug/net48/linux-x64/TestEtoVeldrid.Gtk.exe"
-            },
-            "console": "internalConsole"
+            "console": "internalConsole",
+            "stopAtEntry": false
         },
         {
-            "name": "Launch .NET (WPF)",
+            "name": "Launch WPF - net48",
             "type": "clr",
             "request": "launch",
             "preLaunchTask": "build",
@@ -49,7 +46,7 @@
             "console": "internalConsole"
         },
         {
-            "name": "Launch .NET (WinForms)",
+            "name": "Launch WinForms - net48",
             "type": "clr",
             "request": "launch",
             "preLaunchTask": "build",

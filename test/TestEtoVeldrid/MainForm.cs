@@ -1,11 +1,7 @@
 ﻿using Eto.Drawing;
 using Eto.Forms;
 using Eto.Veldrid;
-using System;
-using System.Threading;
-using TestEtoVeldrid2;
 using Veldrid;
-using VeldridEto;
 using PixelFormat = Veldrid.PixelFormat;
 
 namespace TestEtoVeldrid

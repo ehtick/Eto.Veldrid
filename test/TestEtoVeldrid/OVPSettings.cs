@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace VeldridEto;
+namespace TestEtoVeldrid;
 
 public static class errorReporter
 {
@@ -56,10 +56,7 @@ public class OVPSettings
 	private float base_zoom;
 	private float zoomFactor;
 	private int zoomStep;
-	private bool allowZoomAndPan;
 	private bool dynamicGrid;
-	private bool panning;
-	private bool selecting;
 	private bool showGrid;
 	private bool showAxes;
 	private bool showDrawn;
@@ -443,12 +440,9 @@ public class OVPSettings
 		backColor = new Color(1.0f, 1.0f, 1.0f);
 		selectionColor = SystemColors.Highlight;
 		inverSelectionColor = SystemColors.Highlight;
-		allowZoomAndPan = true;
 		enableFilledPolys = false;
 		showPoints = true;
 		dynamicGrid = true;
-		panning = false;
-		selecting = false;
 		showGrid = true;
 		showAxes = true;
 		grid_spacing = 10;

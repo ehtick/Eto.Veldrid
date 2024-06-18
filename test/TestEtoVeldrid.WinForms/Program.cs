@@ -10,7 +10,7 @@ namespace TestEtoVeldrid.WinForms
 		{
 			var platform = new Eto.WinForms.Platform();
 
-			new Application(platform).Run(new MainForm());
+			new Eto.Forms.Application(platform).Run(new MainForm());
 		}
 	}
 }

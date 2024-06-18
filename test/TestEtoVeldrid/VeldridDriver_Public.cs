@@ -1,8 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
-using VeldridEto;
 
-namespace TestEtoVeldrid2;
+namespace TestEtoVeldrid;
 
 public partial class VeldridDriver
 {

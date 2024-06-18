@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RuntimeIdentifiers>osx-x64;osx-arm64</RuntimeIdentifiers>
-    <TargetFramework>net8.0</TargetFramework>
-    <DefineConstants>MONOMAC</DefineConstants>
+    <TargetFramework>net8.0-macos</TargetFramework>
+    <SupportedOSPlatformVersion>10.15</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,12 +12,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Eto.Platform.Mac64" Version="2.8.2" />
+    <PackageReference Include="Eto.Platform.macOS" Version="2.8.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\TestEtoVeldrid\TestEtoVeldrid.csproj" />
-    <ProjectReference Include="..\..\src\Eto.Veldrid.Mac\Eto.Veldrid.Mac64.csproj" />
+    <ProjectReference Include="..\..\src\Eto.Veldrid.Mac\Eto.Veldrid.macOS.csproj" />
   </ItemGroup>
 
 

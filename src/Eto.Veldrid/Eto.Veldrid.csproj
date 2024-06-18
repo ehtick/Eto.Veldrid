@@ -1,33 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <TargetFrameworks>netstandard2.0;net6.0</TargetFrameworks>
     <Title>Veldrid Control for Eto.Forms</Title>
     <Description>
       This provides the control to use in your Eto.Forms application.
       Add the platform-specific package for each platform you wish to support. E.g. Eto.Veldrid.Gtk, Eto.Veldrid.Mac64, Eto.Veldrid.Wpf, etc.
     </Description>
-    <TargetFramework>net7.0</TargetFramework>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="Eto.Forms" Version="2.8.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Veldrid" Version="4.9.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="$(TopLevelDirectory)LICENSE" Pack="True" PackagePath=".">
-      <Link>Eto.Veldrid-LICENSE</Link>
+    <Content Include="$(TopLevelDirectory)LICENSE" Pack="True" PackagePath=".">
+      <Link>Eto.Veldrid-LICENSE.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="$(TopLevelDirectory)AUTHORS" Pack="True" PackagePath=".">
-      <Link>Eto.Veldrid-AUTHORS</Link>
+    </Content>
+    <Content Include="$(TopLevelDirectory)AUTHORS" Pack="True" PackagePath=".">
+      <Link>Eto.Veldrid-AUTHORS.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using Eto.Drawing;
 
-namespace VeldridEto;
+namespace TestEtoVeldrid;
 
 public class ovp_Poly
 {

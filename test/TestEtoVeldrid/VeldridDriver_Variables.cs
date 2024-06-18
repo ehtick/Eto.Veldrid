@@ -4,7 +4,7 @@ using Eto.Veldrid;
 using System.Numerics;
 using Veldrid;
 
-namespace TestEtoVeldrid2;
+namespace TestEtoVeldrid;
 
 public partial class VeldridDriver
 {
@@ -35,8 +35,8 @@ public partial class VeldridDriver
 	private uint[] gridIndices;
 	private uint[] axesIndices;
 
-	private float axisZ;
-	private float gridZ;
+	private float axisZ = 0;
+	private float gridZ = 0;
 
 	private DeviceBuffer GridVertexBuffer;
 	private DeviceBuffer GridIndexBuffer;
@@ -54,7 +54,6 @@ public partial class VeldridDriver
 	private DeviceBuffer PolysVertexBuffer;
 	private DeviceBuffer TessVertexBuffer;
 
-	private Pipeline PointsPipeline;
 	private Pipeline LinePipeline;
 	private Pipeline LinesPipeline;
 	private Pipeline FilledPipeline;
@@ -75,15 +74,12 @@ public partial class VeldridDriver
 
 	private const float pointWidth = 0.50f;
 	private bool hasFocus;
-	private bool keyHandlerApplied;
 
 	// Use for drag handling.
 	private bool dragging { get; set; }
 	private float x_orig;
 	private float y_orig;
 
-	private DateTime CurrentTime;
-	private DateTime PreviousTime = DateTime.Now;
 
 	private ContextMenu menu;
 }

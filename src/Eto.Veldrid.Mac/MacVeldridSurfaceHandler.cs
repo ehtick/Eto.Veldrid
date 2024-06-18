@@ -3,12 +3,13 @@ using Eto.Veldrid;
 using Eto.Veldrid.Mac;
 using System;
 using Veldrid;
-using MonoMac.CoreVideo;
 using Eto.Drawing;
 
 #if MONOMAC
+using MonoMac.CoreVideo;
 using MonoMac.AppKit;
-#elif XAMMAC2
+#else
+using CoreVideo;
 using AppKit;
 #endif
 
@@ -18,7 +19,7 @@ namespace Eto.Veldrid.Mac
 {
 	public class MacVeldridSurfaceHandler : MacView<MacVeldridView, VeldridSurface, VeldridSurface.ICallback>, VeldridSurface.IHandler
 	{
-		CVDisplayLink _displayLink;
+		CVDisplayLink? _displayLink;
 		Size? _newRenderSize;
 
 		public Size RenderSize => Size.Round((SizeF)Widget.Size * Scale);
@@ -36,13 +37,13 @@ namespace Eto.Veldrid.Mac
 			Control.Draw += Control_Draw;
 		}
 
-		public Swapchain CreateSwapchain()
+		public Swapchain? CreateSwapchain()
 		{
-			Swapchain swapchain;
+			Swapchain? swapchain;
 
 			if (Widget.Backend == GraphicsBackend.OpenGL)
 			{
-				swapchain = Widget.GraphicsDevice.MainSwapchain;
+				swapchain = Widget.GraphicsDevice?.MainSwapchain;
 			}
 			else
 			{
@@ -54,7 +55,7 @@ namespace Eto.Veldrid.Mac
 				var source = SwapchainSource.CreateNSView(Control.Handle);
 
 				var renderSize = RenderSize;
-				swapchain = Widget.GraphicsDevice.ResourceFactory.CreateSwapchain(
+				swapchain = Widget.GraphicsDevice?.ResourceFactory.CreateSwapchain(
 					new SwapchainDescription(
 						source,
 						(uint)renderSize.Width,
@@ -67,7 +68,7 @@ namespace Eto.Veldrid.Mac
 			return swapchain;
 		}
 
-		private void Control_Draw(object sender, EventArgs e)
+		private void Control_Draw(object? sender, EventArgs e)
 		{
 			Callback.OnInitializeBackend(Widget, new InitializeEventArgs(RenderSize));
 
@@ -82,7 +83,7 @@ namespace Eto.Veldrid.Mac
 			Widget.SizeChanged += Widget_SizeChanged;
 		}
 
-		private void Widget_SizeChanged(object sender, EventArgs e)
+		private void Widget_SizeChanged(object? sender, EventArgs e)
 		{
 			if (Widget.Backend == GraphicsBackend.OpenGL)
 			{

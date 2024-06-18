@@ -1,6 +1,6 @@
 using Eto.Drawing;
 
-namespace TestEtoVeldrid2;
+namespace TestEtoVeldrid;
 
 public partial class VeldridDriver
 {

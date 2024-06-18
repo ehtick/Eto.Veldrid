@@ -2,7 +2,7 @@ using Eto;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace TestEtoVeldrid2;
+namespace TestEtoVeldrid;
 
 public partial class VeldridDriver
 {
@@ -219,7 +219,6 @@ public partial class VeldridDriver
 			Surface.MouseEnter += setFocus;
 			Surface.MouseLeave += removeFocus;
 			Surface.KeyDown += keyHandler;
-			keyHandlerApplied = true;
 			// Surface.MouseLeave += removeKeyHandler;
 		}
 		catch (Exception ex)
