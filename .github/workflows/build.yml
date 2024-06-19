@@ -11,95 +11,50 @@ on:
 env:
   BuildVersion: "CI.${{ github.run_id }}"
   BuildBranch: "${{ github.ref }}"
-  BuildParameters: "/v:Minimal /p:Configuration=Release Eto.Veldrid.sln"
+  DotNetVersion: '8.0.x'
 
 jobs:
-  build-windows:
-
-    runs-on: windows-latest
-
-    env:
-      PlatformBuildParameters: /p:Platform=Windows
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
-
-    - uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
-
-    - name: Install macos workload
-      run: dotnet workload install macos
-
-    - name: Build
-      run: dotnet build ${{ env.PlatformBuildParameters }} ${{ env.BuildParameters }}
-
-    - name: Pack
-      run: dotnet pack ${{ env.PlatformBuildParameters }} ${{ env.BuildParameters }}
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: nuget
-        path: artifacts/nuget/**/*.nupkg
-
   build-mac:
 
     runs-on: macos-latest
 
-    env:
-      PlatformBuildParameters: /p:Platform=Mac
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: '8.0.x'
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DotNetVersion }}
 
-    - name: Setup XCode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
+      - name: Setup XCode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
-    - uses: actions/cache@v4
-      with:
-        path: ~/.nuget/packages
-        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-nuget-
+      - name: Install macos workload
+        run: dotnet workload install macos
 
-    - name: Install macos workload
-      run: dotnet workload install macos
+      - name: Build
+        run: dotnet build -m:1 -clp:NoSummary -c Release Eto.Veldrid.sln
 
-    - name: Build
-      run: dotnet build ${{ env.PlatformBuildParameters }} ${{ env.BuildParameters }}
+      - name: Pack
+        run: dotnet pack --no-build --no-restore -m:1 -clp:NoSummary -c Release Eto.Veldrid.sln
 
-    - name: Pack
-      run: dotnet pack ${{ env.PlatformBuildParameters }} ${{ env.BuildParameters }}
-
-#    - name: Upload artifacts
-#      uses: actions/upload-artifact@v4
-#      with:
-#        name: nuget
-#        path: artifacts/nuget/**/Eto.Veldrid.XamMac2.nupkg
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget
+          path: artifacts/nuget/**/*.nupkg
 
   publish:
-    needs: [ build-windows, build-mac ]
+    needs: build-mac
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     steps:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DotNetVersion }}
 
       - name: Download NuGet Packages
         uses: actions/download-artifact@v4
